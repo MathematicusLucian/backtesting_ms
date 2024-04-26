@@ -1,4 +1,5 @@
 from datetime import datetime, date
+from pydantic import BaseModel
 # from altair import Stream
 from backtesting import Backtest, Strategy
 from backtesting.test import GOOG
@@ -9,6 +10,11 @@ from pandas_datareader import data as pdr
 # import matplotlib.pyplot as plt
 # import seaborn as sns
 from src.services.strategy_service import TradingStrategy_ConcreteCreator
+
+class StratData(BaseModel):
+    int
+    Backtest
+    pd.DataFrame
 
 trading_strategies = [
     "AverageDirectionalMovement",
@@ -120,41 +126,53 @@ def append_row(df, row):
                 pd.DataFrame([row], columns=row.index)]
            ).reset_index(drop=True)
 
+def save_to_csv(df, file_name):
+    df.to_csv(f'./results/{file_name}.csv', sep=',', index=False, encoding='utf-8')
+
 def determine_optimized_strategy_config(bt):
     return bt.optimize(n1=range(5, 30, 5),
         n2=range(10, 70, 5),
         maximize="Win Rate [%]", #"Equity Final [$]", #"Profit Factor"
         constraint=lambda param: param.n1 < param.n2)
 
-def get_strategy_with_max_result(maximize):
+def load_strat(strat) -> type[Strategy]:
     trading_strategy_factory = TradingStrategy_ConcreteCreator()
-    maximum_result=0
+    return trading_strategy_factory.get_trading_stategy(strat)
+
+def get_strategy_with_max_result(asset:pd.DataFrame, maximisation_metric:str) -> StratData:
+    strongest_maximize_result:int=0
+    strongest_bt:Backtest=None
+    strongest_stats:pd.DataFrame=None
     for strat in trading_strategies:
-        trading_strategy: type[Strategy] = trading_strategy_factory.get_trading_stategy(strat)
-        bt = Backtest(bitcoin_df, trading_strategy, cash=10_000, commission=.002)
+        trading_strategy = load_strat(strat)
+        bt = Backtest(asset, trading_strategy, cash=10_000, commission=.002)
         stats = bt.run() # kwargs: set parameters
-        if float(stats[maximize]) > float(maximum_result):
-            maximum_result = float(stats[maximize])
         # stats = determine_optimized_strategy_config(bt)
-        return stats, bt
+        if float(stats[maximisation_metric]) > float(strongest_maximize_result):
+            strongest_maximize_result = float(stats[maximisation_metric])
+            strongest_bt = bt
+            strongest_stats = stats
+    return strongest_stats, strongest_bt, strongest_maximize_result
+
+def get_asset_data(asset, start, end):
+    asset_df:pd.DataFrame = pdr.get_data_yahoo(asset, start=start, end=end) 
+    asset_df["Date"] = pd.to_datetime(asset_df.index) 
+    return asset_df
 
 if __name__ == "__main__":
-    asset="BTC-GBP"
-    start=date(2014,1,1) 
-    end=date.today()
-    bitcoin_df:pd.DataFrame = pdr.get_data_yahoo(asset, start=start, end=end) 
-    bitcoin_df["Date"] = pd.to_datetime(bitcoin_df.index) 
-    maximize="Win Rate [%]"
+    asset_df = get_asset_data("BTC-GBP", date(2014,1,1), date.today())
+    maximize_metric_name="Win Rate [%]"
+    
+    # Backtest to calculate strongest strat
+    strongest_strat, strongest_bt, strongest_maximize_result = get_strategy_with_max_result(asset_df, maximize_metric_name)
+    print(strongest_strat["_strategy"], strongest_maximize_result)
 
-    stats, bt = get_strategy_with_max_result(maximize)
-
-    strategy_with_maximum_result = stats["_strategy"]
-    strategy_results_df = pd.DataFrame(columns=strategy_results_colums)
-    strategy_results_df = append_row(strategy_results_df, stats).reindex(columns=strategy_results_colums)
-    strategy_results_df.to_csv('strategy_results_df.csv', sep=',', index=False, encoding='utf-8')
-    equity_curve = stats["_equity_curve"]
-    equity_curve.to_csv('strategy_results_df__equity_curve.csv', sep=',', index=False, encoding='utf-8')
-    trades = stats["_trades"]
-    trades.to_csv('strategy_results_df__trades', sep=',', index=False, encoding='utf-8')
-
-    # bt.plot(plot_volume=False, plot_pl=False)
+    # Save results to CSV files
+    strongest_strat_df = append_row(pd.DataFrame(columns=strategy_results_colums), strongest_strat) \
+        .reindex(columns=strategy_results_colums)
+    list(map(save_to_csv, 
+        (strongest_strat_df, strongest_strat["_equity_curve"], strongest_strat["_trades"]), 
+        ("strongest_strat", "strongest_strat__equity_curve", "strongest_strat__trades"))
+    )
+    # Plot chart
+    strongest_bt.plot(plot_volume=False, plot_pl=False)

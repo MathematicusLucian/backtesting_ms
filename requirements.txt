@@ -18,6 +18,7 @@ pandas
 pandas-datareader
 pandas-ta
 plotly
+pydantic
 python-dotenv
 pytz
 scikit-learn
