@@ -26,4 +26,4 @@ if __name__ == "__main__":
         ("strongest_strat", "strongest_strat__equity_curve", "strongest_strat__trades"))
     )
     # Plot chart
-    strongest_bt.plot(plot_volume=False, plot_pl=False)
+    strongest_bt.plot(plot_volume=False, plot_pl=False, filename='plots/strongest_strat.html')
