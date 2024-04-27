@@ -2,6 +2,7 @@ from pprint import pprint
 import operator
 from backtesting import Backtest
 from pandas import Series
+from functools import wraps
 from src.services.config_service.config import Configuration
 from src.services.strategy_service.constraints import get_constraint
 conf = Configuration.load_json('strategies_config.json')
@@ -18,12 +19,6 @@ ops = {
     '>' : operator.gt,
 }
 
-def create_eval_phrase(series, optim_criterion) -> str:
-    field_name = optim_criterion["field_name"]
-    op2 = optim_criterion["op2"]
-    operator__ = optim_criterion["operator"]
-    return f"{series[field_name]} {operator__} {op2}"
-
 def eval_binary_expr(op1, oper, op2) -> bool:
     op1, op2 = float(op1), float(op2)
     return ops[oper](op1, op2)
@@ -37,13 +32,52 @@ def optim_func(series):
             return -1
     return series[final_field]
 
+dispatcher = {} 
+dispatcher['range'] = range
+dispatcher['lambda param'] = lambda param: None
+
+def call_func(func, *args, **kwargs):
+    try:
+        return dispatcher[func](*args, **kwargs)
+    except:
+        return "Invalid function"
+
+def get_kwargs(qualname, module):
+    k = conf.kwargs
+    # value = tuple(int(num) for num in x["value"].replace('(', '').replace(')', '').replace('...', '').split(', '))
+    # if dispatcher:
+        # value = call_func(dispatcher, value)
+    value = call_func("range", 10, 70, 5)
+    k["n1"] = value
+    k["n2"] = value
+    k["maximize"] = optim_func
+    k["constraint"] = lambda param: {eval_binary_expr(*(f"{param.n1} < {param.n2}".split()))}
+    return k
+
+def configure_args(f):
+    qualname = f.__qualname__
+    module = f.__module__
+
+    default_kwargs = get_kwargs(qualname, module)
+
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        new_kwargs = {**default_kwargs , **kwargs}
+        return f(*args, **new_kwargs)
+    return wrapper
+
+def create_eval_phrase(series, optim_criterion) -> str:
+    field_name = optim_criterion["field_name"]
+    op2 = optim_criterion["op2"]
+    operator__ = optim_criterion["operator"]
+    return f"{series[field_name]} {operator__} {op2}"
+
+@configure_args
+def opto(bt, **kwargs):
+    return bt.optimize(**kwargs)
+
 def determine_optimized_strategy_indicator_values(strat_name, bt) -> Backtest|None:
     constraint = get_constraint(strat_name)
     if constraint == None:
         return None
-    return bt.optimize(
-        n1=range(5, 30, 5),
-        n2=range(10, 70, 5),
-        maximize=optim_func,
-        constraint=constraint
-    )
+    return opto(bt)
