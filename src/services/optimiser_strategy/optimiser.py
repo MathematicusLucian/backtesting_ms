@@ -18,10 +18,18 @@ ops = {
     '<' : operator.lt,
     '>' : operator.gt,
 }
+dispatcher = {} 
+dispatcher['range'] = range
 
 def eval_binary_expr(op1, oper, op2) -> bool:
     op1, op2 = float(op1), float(op2)
     return ops[oper](op1, op2)
+
+def create_eval_phrase(series, optim_criterion) -> str:
+    field_name = optim_criterion["field_name"]
+    op2 = optim_criterion["op2"]
+    operator__ = optim_criterion["operator"]
+    return f"{series[field_name]} {operator__} {op2}"
 
 def check_against_criteria(series, optim_criterion) -> bool:
     return eval_binary_expr(*(f"{create_eval_phrase(series, optim_criterion)}".split()))
@@ -31,10 +39,6 @@ def optim_func(series):
         if check_against_criteria(series, optim_criterion):
             return -1
     return series[final_field]
-
-dispatcher = {} 
-dispatcher['range'] = range
-dispatcher['lambda param'] = lambda param: None
 
 def call_func(func, *args, **kwargs):
     try:
@@ -61,20 +65,12 @@ def get_kwargs(qualname, module):
 def configure_args(f):
     qualname = f.__qualname__
     module = f.__module__
-
     default_kwargs = get_kwargs(qualname, module)
-
     @wraps(f)
     def wrapper(*args, **kwargs):
         new_kwargs = {**default_kwargs , **kwargs}
         return f(*args, **new_kwargs)
     return wrapper
-
-def create_eval_phrase(series, optim_criterion) -> str:
-    field_name = optim_criterion["field_name"]
-    op2 = optim_criterion["op2"]
-    operator__ = optim_criterion["operator"]
-    return f"{series[field_name]} {operator__} {op2}"
 
 @configure_args
 def opto(bt, **kwargs):
