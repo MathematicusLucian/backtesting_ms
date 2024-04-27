@@ -1,4 +1,15 @@
 {
+    "optim_criteria": [
+        { "field_name": "Expectancy [%]", "op2": 0, "operator":"<" },
+        { "field_name": "Max. Drawdown [%]", "op2": 20, "operator":">" },
+        { "field_name": "Profit Factor", "op2": 1, "operator":"<" },
+        { "field_name": "Sharpe Ratio", "op2": 1.5, "operator":"<" },
+        { "field_name": "SQN", "op2": 2.5, "operator":"<" },
+        { "field_name": "# Trades", "op2": 10, "operator":"<" },
+        { "field_name": "Win Rate [%]", "op2": 40, "operator":"<" },
+        { "field_name": "Worst Trade [%]", "op2": -20, "operator":"<" }
+    ],
+    "optim_criteria_final_field": "Equity Final [$]",
     "strategy_results_columns": [
         "_strategy",
         "Start",
