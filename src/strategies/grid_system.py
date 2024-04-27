@@ -10,7 +10,7 @@ def generate_grid(midprice, grid_distance, grid_range):
     return (np.arange(midprice-grid_range, midprice+grid_range, grid_distance))
 
 class GridStrat(Strategy):
-    mysize = 50
+    size = 50
     def init(self):
         super().init()
         self.signal1 = self.I(SIGNAL)
@@ -23,11 +23,11 @@ class GridStrat(Strategy):
         if self.signal1==1 and len(self.trades)<=10000:             
             sl1 = self.data.Close[-1] + slatr
             tp1 = self.data.Close[-1] - slatr*TPSLRatio
-            self.sell(sl=sl1, tp=tp1, size=self.mysize)
+            self.sell(sl=sl1, tp=tp1, size=self.size)
 
             sl1 = self.data.Close[-1] - slatr
             tp1 = self.data.Close[-1] + slatr*TPSLRatio
-            self.buy(sl=sl1, tp=tp1, size=self.mysize)
+            self.buy(sl=sl1, tp=tp1, size=self.size)
 
 dataF = yf.download("EURUSD=X", start="2022-11-19", end="2023-01-16", interval='5m')
 #dataF.iloc[:,:]
