@@ -1,7 +1,6 @@
 import warnings
 warnings.filterwarnings("ignore")
 from datetime import datetime, date
-from pydantic import BaseModel
 from abc import ABC, abstractmethod
 # from altair import Stream
 from backtesting import Backtest, Strategy
@@ -11,12 +10,8 @@ import yfinance as yf
 from pandas_datareader import data as pdr
 # import matplotlib.pyplot as plt
 # import seaborn as sns
+from src.models.stratdata import StratData
 from src.strategies import *
-    
-class StratData(BaseModel):
-    pd.DataFrame
-    Backtest
-    int
 
 class TradingStrategyCreator(ABC):
     @abstractmethod
@@ -29,7 +24,6 @@ class TradingStrategy_ConcreteCreator(TradingStrategyCreator):
         # params["n1"]=1
         # params["n2"]=200
         return globals()[targetclass]
-
 
 def optim_func(series):
     if series["Expectancy [%]"] < 0:
@@ -51,6 +45,11 @@ def optim_func(series):
     return series["Equity Final [$]"]
 
 # ml() #SciKit Machine Learning
+
+def get_asset_data(asset, start, end) -> pd.DataFrame:
+    asset_df:pd.DataFrame = pdr.get_data_yahoo(asset, start=start, end=end) 
+    asset_df["Date"] = pd.to_datetime(asset_df.index) 
+    return asset_df
 
 def append_row(df, row):
     return pd.concat([
@@ -129,8 +128,3 @@ def get_strategy_with_max_result(asset:pd.DataFrame, trading_strategies, maximis
             strongest_bt = bt
             strongest_strategy_stats = stats
     return strongest_strategy_stats, strongest_bt, strongest_maximize_result
-
-def get_asset_data(asset, start, end) -> pd.DataFrame:
-    asset_df:pd.DataFrame = pdr.get_data_yahoo(asset, start=start, end=end) 
-    asset_df["Date"] = pd.to_datetime(asset_df.index) 
-    return asset_df

@@ -2,7 +2,7 @@ from datetime import date
 import pandas as pd
 from backtesting import Backtest
 from src.services.config_service.config import Configuration
-from src.services.strategy_service import *
+from src.services.strategy_service.trading_strategy_factory import *
 
 if __name__ == "__main__":
     conf = Configuration.load_json('strategies_config.json')

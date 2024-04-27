@@ -364,7 +364,7 @@ ENV/
 
 # output
 *.csv
-*.json
+config.json
 *.txt
 
 **/test_twint.py
