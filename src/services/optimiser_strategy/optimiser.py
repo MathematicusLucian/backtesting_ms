@@ -43,17 +43,18 @@ def call_func(func, *args, **kwargs):
         return "Invalid function"
 
 def get_kwargs(qualname, module):
-    k = conf.kwargs
-    # value = tuple(int(num) for num in x["value"].replace('(', '').replace(')', '').replace('...', '').split(', '))
-    # if dispatcher:
-        # value = call_func(dispatcher, value)
-    value = call_func("range", 10, 70, 5)
-    k["n1"] = value
-    k["n2"] = value
+    conf_kwargs = conf.kwargs
+    k = {}
+    for p in conf_kwargs.params:
+        if p.is_func:
+            value = p.value
+            value = tuple(int(num) for num in value.replace('(', '').replace(')', '').replace('...', '').split(', '))
+            value = call_func(p.func, *value)
+        k[p.name] = value
     k["maximize"] = optim_func
-    a = "n1"
-    b = "n2"
-    oper = "<"
+    a = conf_kwargs.constraint.op1
+    b = conf_kwargs.constraint.op2
+    oper = conf_kwargs.constraint.operator
     k["constraint"] = lambda param: {eval_binary_expr(*(f"{param[a]} {oper} {param[b]}".split()))}
     return k
 

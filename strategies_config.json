@@ -1,7 +1,16 @@
 {
     "kwargs": {
-        "n1":"range(5, 30, 5)",
-        "n2":"range(5, 30, 5)",
+        "params": [{
+            "name": "n1",
+            "is_func": true,
+            "func": "range",
+            "value": "5, 30, 5"
+        },{
+            "name": "n2",
+            "is_func": true,
+            "func": "range",
+            "value": "5, 30, 5"
+        }],
         "maximize": "Win Rate [%]",
         "constraint": 
             { 
