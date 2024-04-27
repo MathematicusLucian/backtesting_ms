@@ -51,7 +51,10 @@ def get_kwargs(qualname, module):
     k["n1"] = value
     k["n2"] = value
     k["maximize"] = optim_func
-    k["constraint"] = lambda param: {eval_binary_expr(*(f"{param.n1} < {param.n2}".split()))}
+    a = "n1"
+    b = "n2"
+    oper = "<"
+    k["constraint"] = lambda param: {eval_binary_expr(*(f"{param[a]} {oper} {param[b]}".split()))}
     return k
 
 def configure_args(f):

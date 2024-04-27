@@ -3,7 +3,12 @@
         "n1":"range(5, 30, 5)",
         "n2":"range(5, 30, 5)",
         "maximize": "Win Rate [%]",
-        "constraint": "lambda param: param.n1 < param.n2"
+        "constraint": 
+            { 
+                "op1": "n1", 
+                "op2": "n2", 
+                "operator":"<" 
+            }
     },
     "optim_criteria": [
         { "field_name": "Expectancy [%]", "op2": 0, "operator":"<" },
