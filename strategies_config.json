@@ -1,24 +1,28 @@
 {
-    "kwargs": {
-        "params": [{
-            "name": "n1",
-            "is_func": true,
-            "func": "range",
-            "value": "5, 30, 5"
-        },{
-            "name": "n2",
-            "is_func": true,
-            "func": "range",
-            "value": "5, 30, 5"
-        }],
-        "maximize": "Win Rate [%]",
-        "constraint": 
-            { 
+    "kwargs": [
+        {
+            "name": ["SmaCross", "SmaCross__Trailing", "Sma4Cross"],
+            "params": [
+                {
+                    "name": "n1",
+                    "is_func": true,
+                    "func": "range",
+                    "value": "5, 30, 5"
+                },{
+                    "name": "n2",
+                    "is_func": true,
+                    "func": "range",
+                    "value": "5, 30, 5"
+                }
+            ],
+            "maximize": "Win Rate [%]",
+            "constraint": { 
                 "op1": "n1", 
                 "op2": "n2", 
                 "operator":"<" 
             }
-    },
+        }
+    ],
     "optim_criteria": [
         { "field_name": "Expectancy [%]", "op2": 0, "operator":"<" },
         { "field_name": "Max. Drawdown [%]", "op2": 20, "operator":">" },

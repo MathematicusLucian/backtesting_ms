@@ -1,3 +1,5 @@
+import inspect
+import itertools
 from pprint import pprint
 import operator
 from backtesting import Backtest
@@ -46,9 +48,12 @@ def call_func(func, *args, **kwargs):
     except:
         return "Invalid function"
 
-def get_kwargs(qualname, module):
+def get_kwargs(qualname, module, strat_name):
     conf_kwargs = conf.kwargs
-    k = {}
+    for k in conf_kwargs:
+        if strat_name in k.name:
+            conf_kwargs = k
+    k = {}   
     for p in conf_kwargs.params:
         if p.is_func:
             value = p.value
@@ -65,19 +70,20 @@ def get_kwargs(qualname, module):
 def configure_args(f):
     qualname = f.__qualname__
     module = f.__module__
-    default_kwargs = get_kwargs(qualname, module)
     @wraps(f)
     def wrapper(*args, **kwargs):
-        new_kwargs = {**default_kwargs , **kwargs}
+        strat_name = args[-1]
+        default_kwargs = get_kwargs(qualname, module, strat_name)
+        new_kwargs = {**default_kwargs, **kwargs}
         return f(*args, **new_kwargs)
     return wrapper
 
 @configure_args
-def opto(bt, **kwargs):
+def opto(bt, strat_name, **kwargs):
     return bt.optimize(**kwargs)
 
 def determine_optimized_strategy_indicator_values(strat_name, bt) -> Backtest|None:
     constraint = get_constraint(strat_name)
     if constraint == None:
         return None
-    return opto(bt)
+    return opto(bt, strat_name)
