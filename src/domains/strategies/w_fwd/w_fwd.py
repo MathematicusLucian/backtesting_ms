@@ -43,7 +43,7 @@ def w_fwd():
     # # print(price)
     # # price.vbt.plot().show()
 
-    # rsi = vbt.RSI.run(asset_data, window=21)
+    rsi = vbt.RSI.run(asset_data, window=21)
     # entries = rsi.rsi_crossed_above(60)
     # exits = rsi.rsi_crossed_below(30)
     # pf = vbt.Portfolio.from_signals(asset_data, entries, exits)
