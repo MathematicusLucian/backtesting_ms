@@ -68,4 +68,5 @@ roll_in_and_out_samples(price, **split_kwargs, plot=True, trace_names=['in-sampl
 (in_price, in_indexes), (out_price, out_indexes) =roll_in_and_out_samples(price, **split_kwargs)
 print(in_price.shape, len(in_indexes))  # in-sample
 print(out_price.shape, len(out_indexes))  # out-sample
-
+in_hold_sharpe = simulate_holding(in_price, **pf_kwargs)
+print(in_hold_sharpe)
