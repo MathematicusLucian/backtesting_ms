@@ -39,16 +39,13 @@ def w_fwd():
     before = now - datetime.timedelta(days=1000)
     ticker = "BTC-USD"
     asset_data = fetch_asset_data(ticker).get('Close')
-    print(asset_data)
-    
+    # print(asset_data)
+    # asset_data.vbt.plot().show()
 
-    # # print(price)
-    # # price.vbt.plot().show()
-
-    # rsi = vbt.RSI.run(asset_data, window=21)
-    # entries = rsi.rsi_crossed_above(60)
-    # exits = rsi.rsi_crossed_below(30)
-    # pf = vbt.Portfolio.from_signals(asset_data, entries, exits)
+    rsi = vbt.RSI.run(asset_data, window=21)
+    entries = rsi.rsi_crossed_above(60)
+    exits = rsi.rsi_crossed_below(30)
+    pf = vbt.Portfolio.from_signals(asset_data, entries, exits)
     # # print(pf)
     # # pf.plot().show()
 
