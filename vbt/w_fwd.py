@@ -4,6 +4,7 @@ import pandas as pd
 import vectorbt as vbt
 
 def roll_in_and_out_samples(price, **kwargs):
+#     print(kwargs)
     return price.vbt.rolling_split(**kwargs)
 
 def simulate_holding(price, **kwargs):
@@ -35,20 +36,24 @@ def simulate_best_params(price, best_fast_windows, best_slow_windows, **kwargs):
 
 now = datetime.datetime.now()
 before = now - datetime.timedelta(days=3)
-ticker = "BTC-GBP"
+ticker = "BTC-USD"
 
 price = vbt.YFData.download(ticker).get('Close')
-print(price)
-price.vbt.plot().show()
+# price = vbt.YFData.download(
+#     ticker, 
+#     missing_index='drop',
+#     start=before.timestamp(),
+#     end=now.timestamp()
+# ).get('Close')
+# print(price)
+# price.vbt.plot().show()
 
-price = vbt.YFData.download(
-    ticker, 
-    missing_index='drop',
-    start=before.timestamp(),
-    end=now.timestamp()
-).get('Close')
-print(price)
-price.vbt.plot().show()
+rsi = vbt.RSI.run(price, window=21)
+entries = rsi.rsi_crossed_above(60)
+exits = rsi.rsi_crossed_below(30)
+pf = vbt.Portfolio.from_signals(price, entries, exits)
+# print(pf)
+# pf.plot().show()
 
 split_kwargs = dict(  # 30 windows, each 2 years long, reserve 180 days for test
     n=30, 
@@ -58,3 +63,9 @@ split_kwargs = dict(  # 30 windows, each 2 years long, reserve 180 days for test
 )
 pf_kwargs = dict(direction='both', freq='d')    # long and short
 windows = np.arange(10, 50)
+
+roll_in_and_out_samples(price, **split_kwargs, plot=True, trace_names=['in-sample', 'out-sample']).show()
+(in_price, in_indexes), (out_price, out_indexes) =roll_in_and_out_samples(price, **split_kwargs)
+print(in_price.shape, len(in_indexes))  # in-sample
+print(out_price.shape, len(out_indexes))  # out-sample
+
