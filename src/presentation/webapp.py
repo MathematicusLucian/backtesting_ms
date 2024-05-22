@@ -1,15 +1,20 @@
 import streamlit as st
 import pandas_ta as ta
 import inspect
-from src.domains.strategy_service.pandas_ta_utils import list_indicators
-from src.domains.strategy_service.strategy_service import StrategyService
-from src.domains.strategy_service.utils import plot_indicator
+from src.domains.strategy_simulation_service.utils import list_indicators
+from src.domains.strategy_simulation_service.strategy_simulation_service import StrategySimService
 
 crypto_currency = ["BTC", "ETH", "SOL", "PEPE", "BONK"]
 trad_currency = ["GBP", "USD"]
 
-def run_strategies(strategy_service, init_cash, select_asset, select_asset_base, col2, container, select_indicator, list_args):
-    strategies_outcome = strategy_service.run_strategies(
+def plot_indicator(indicator, entries, exits):
+    fig = indicator.vbt.plot()
+    entries.vbt.signals.plot_as_entry_markers(indicator, fig=fig)
+    exits.vbt.signals.plot_as_exit_markers(indicator, fig=fig)
+    return fig
+
+def run_strategies(strategy_simulation, init_cash, select_asset, select_asset_base, col2, container, select_indicator, list_args):
+    strategies_outcome = strategy_simulation.run_strategies(
         init_cash, select_asset, select_asset_base, select_indicator, list_args
     )
     if not strategies_outcome["entries"].empty:
@@ -25,7 +30,7 @@ def run_strategies(strategy_service, init_cash, select_asset, select_asset_base,
         container.dataframe(strategies_outcome["name_attr"])
 
 def main():
-    strategy_service = StrategyService()
+    strategy_simulation = StrategySimService()
     container = st.container()  
     container.header("Backtesting App"),
     col1, col2 = st.columns([4, 4])
@@ -50,5 +55,5 @@ def main():
             elif argument not in data_set:
                 name_text_input = st.number_input(argument, step=1)
             list_args[argument] = name_text_input
-        st.button("Run", on_click=run_strategies, args=(strategy_service, 10000, select_asset, select_asset_base, col2, container, select_indicator, list_args))
+        st.button("Run", on_click=run_strategies, args=(strategy_simulation, 10000, select_asset, select_asset_base, col2, container, select_indicator, list_args))
         st.sidebar.write(indicator_function.__doc__)

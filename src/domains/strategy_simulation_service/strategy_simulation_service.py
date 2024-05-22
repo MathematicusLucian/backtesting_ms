@@ -1,9 +1,9 @@
 import vectorbt as vbt
 import pandas as pd
 from src.persistence.yf import read_asset_data
-from src.domains.strategy_service.strategies import strategies_functions_dict
+from src.domains.strategies import strategies_functions_dict
 
-class StrategyService:
+class StrategySimService:
     def __init__(self):
         self.asset_data = {}
 
