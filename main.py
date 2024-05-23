@@ -2,8 +2,8 @@ import sys
 # sys.path.append("..")
 from streamlit.web import cli as stcli
 from streamlit import runtime
-from src.presentation.webapp import main
-from src.persistence.yf import import_data
+from src.presentation.streamlit import main
+# from src.persistence.yf import import_data
 from src.domains.strategy_simulation_service.strategy_simulation_service import *
 # from src.domains.backtesting_service.w_fwd.walkforward import *
 # from src.domains.strategy_service.custom_indicators import *
