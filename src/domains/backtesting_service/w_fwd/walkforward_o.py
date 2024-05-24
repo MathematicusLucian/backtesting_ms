@@ -9,6 +9,9 @@ class Walkforward_Optimisation:
     def __init__(self, asset_data):
         self.asset_data = asset_data
         self.wf = Walkforward(asset_data)
+        color_schema = vbt.settings['plotting']['color_schema']
+        self.color1 = color_schema['blue']
+        self.color2 = color_schema['orange']
 
     def simulate_best_params(self, price, best_fast_windows, best_slow_windows, **kwargs):
         return simulate_best_params__MA(price, best_fast_windows, best_slow_windows, **kwargs)
@@ -37,16 +40,10 @@ class Walkforward_Optimisation:
             'out_sample_median': self.out_sharpe.groupby('split_idx').median().values,
             'out_sample_test': out_test_sharpe.values
         })
-        color_schema = vbt.settings['plotting']['color_schema']
         cv_results_df.vbt.plot(
             trace_kwargs=[
-                dict(line_color=color_schema['blue']),
-                dict(line_color=color_schema['blue'], line_dash='dash'),
-                dict(line_color=color_schema['blue'], line_dash='dot'),
-                dict(line_color=color_schema['orange']),
-                dict(line_color=color_schema['orange'], line_dash='dash'),
-                dict(line_color=color_schema['orange'], line_dash='dot')
-            ]
+                dict(line_color=self.color1), dict(line_color=self.color1, line_dash='dash'), dict(line_color=self.color1, line_dash='dot'),
+                dict(line_color=self.color2), dict(line_color=self.color2, line_dash='dash'), dict(line_color=self.color2, line_dash='dot')]
         ).show()
 
 if __name__ == "__main__":
