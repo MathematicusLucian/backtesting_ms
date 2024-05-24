@@ -3,14 +3,15 @@ import pandas as pd
 import vectorbt as vbt
 from src.core.asset_data_service.asset_data_service import fetch_asset_data__close
 from src.domains.backtesting_service.w_fwd.walkforward import Walkforward
+from src.domains.strategies.ma import simulate_best_params__MA
 
 class Walkforward_Optimisation:
     def __init__(self, asset_data):
         self.asset_data = asset_data
         self.wf = Walkforward(asset_data)
 
-    def simulate_best_params__MA(self, price, best_fast_windows, best_slow_windows, **kwargs):
-        return self.wf.simulate_best_params__MA(price, best_fast_windows, best_slow_windows, **kwargs)
+    def simulate_best_params(self, price, best_fast_windows, best_slow_windows, **kwargs):
+        return simulate_best_params__MA(price, best_fast_windows, best_slow_windows, **kwargs)
 
     def get_best_index(self, performance, higher_better=True):
         if higher_better:

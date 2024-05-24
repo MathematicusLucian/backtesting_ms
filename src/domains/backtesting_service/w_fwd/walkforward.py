@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import vectorbt as vbt
-from src.domains.strategies.ma import simulate_all_params__MA, simulate_best_params__MA
+from src.domains.strategies.ma import simulate_all_params__MA
 
 class Walkforward:
     def __init__(self, asset_data):
