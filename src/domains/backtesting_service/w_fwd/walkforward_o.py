@@ -15,6 +15,15 @@ class Walkforward_Optimisation:
     def in_sample_simulation(self):
         self.wf.in_sample_simulation()
 
+    def plot_in_sample_simulation(self):
+        return self.wf.plot_in_sample_simulation()
+
+    def plot_asset_data(self):
+        return self.wf.plot_asset_data()
+
+    def plot_in_best_window_pairs(self):
+        return self.wf.plot_in_best_window_pairs()
+
     def out_sample_simulation(self):
         self.in_sharpe = self.wf.in_sharpe
         self.in_hold_sharpe = self.wf.in_hold_sharpe
@@ -41,4 +50,5 @@ class Walkforward_Optimisation:
             'out_sample_median': self.out_sharpe.groupby('split_idx').median().values,
             'out_sample_test': self.out_test_sharpe.values
         })
+        self.optimisation_results_df = self.optimisation_results_df.reset_index()
         return self.optimisation_results_df

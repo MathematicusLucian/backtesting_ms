@@ -4,6 +4,7 @@ import pandas as pd
 import pandas_ta as ta
 import inspect
 import vectorbt as vbt
+import plotly.express as px
 from src.core.asset_data_service.asset_data_service import crypto_currencies, fetch_asset_data, fetch_asset_data__close, trad_currencies
 from src.domains.backtesting_service.w_fwd.walkforward_o import Walkforward_Optimisation
 from src.domains.strategy_simulation_service.utils import list_indicators
@@ -88,12 +89,14 @@ def run_strategies(select_simulation_type, init_cash, select_asset, select_asset
             strategies_outcome['out_sample_hold'],
             strategies_outcome['out_sample_median'],
             strategies_outcome['out_sample_test']]
-        # fig = vbt.plot(trace_kwargs=[
-        #         dict(line_color=color1), dict(line_color=color1, line_dash='dash'), dict(line_color=color1, line_dash='dot'),
-        #         dict(line_color=color2), dict(line_color=color2, line_dash='dash'), dict(line_color=color2, line_dash='dot')])
-        fig = ff.create_distplot(hist_data, group_labels) #, bin_size=[.1, .25, .5])
-        container.plotly_chart(fig, use_container_width=True)
-        container.dataframe(wfo.optimisation_results__df())
+        df = wfo.optimisation_results__df()
+        df['index_col'] = df.index
+        chart_data = pd.DataFrame(wfo.optimisation_results(), columns=group_labels)
+        container.line_chart(chart_data)
+        container.line_chart(wfo.plot_in_best_window_pairs())
+        # container.line_chart(wfo.plot_in_sample_simulation())
+        container.line_chart(wfo.plot_asset_data())
+        container.dataframe(df)
 
 def indicators_args(sidebar_col2, indicator_function):
     selected_indicators = inspect.getfullargspec(indicator_function)
@@ -116,7 +119,7 @@ def main():
     container = st.container()  
     with st.sidebar:
         st.header("Backtesting App"),
-        select_simulation_type = st.radio("Simulation type", options=("Walkforward Optimisation", "Run Strategy"))
+        select_simulation_type = st.radio("Simulation type", options=("Run Strategy", "Walkforward Optimisation"))
         sidebar_col1, sidebar_col2 = st.columns([2, 2])
         select_asset = sidebar_col1.selectbox("Convert from", options=crypto_currencies())
         select_asset_base = sidebar_col1.selectbox("To base", options=trad_currencies())

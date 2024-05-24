@@ -8,7 +8,6 @@ class Walkforward:
         self.strategy = strategy
         self.asset_data = asset_data
         self.input_number_of_days = input_number_of_days
-        # self.asset_data.vbt.plot().show()
         self.rolling_in_and_out_sample_config = dict(           # 30 windows, each 2 years long, reserve 180 days for test
             n=30, 
             window_len=365 * 2, 
@@ -27,6 +26,9 @@ class Walkforward:
         self.in_sharpe = None
         self.in_best_index = None
         self.windows = np.arange(10, 50)
+
+    def plot_asset_data(self):
+        return self.asset_data.vbt.plot()
     
     def roll_in_and_out_samples(self):
         return self.asset_data.vbt.rolling_split(**self.rolling_in_and_out_sample_config)
@@ -75,10 +77,14 @@ class Walkforward:
     
     def calculate_in_best_window_pairs(self):
         return np.array(list(zip(self.in_best_fast_windows, self.in_best_slow_windows)))
-        # pd.DataFrame(in_best_window_pairs, columns=['fast_window', 'slow_window']).vbt.plot().show()
+    
+    def plot_in_best_window_pairs(self):
+        return pd.DataFrame(self.calculate_in_best_window_pairs(), columns=['fast_window', 'slow_window']).vbt.plot()
     
     def in_sample_simulation(self):
         (self.in_price, self.in_indexes), (self.out_price, self.out_indexes) = self.roll_in_and_out_samples()    
-            # plot=True, trace_names=['in-sample', 'out-sample']  # .show()
         self.calculate_in_hold_sharpe()
-        self.in_best_fast_windows, self.in_best_slow_windows = self.best_slow_and_fast_windows()    # Simulate all params for in-sample ranges
+        self.in_best_fast_windows, self.in_best_slow_windows = self.best_slow_and_fast_windows()
+
+    def plot_in_sample_simulation(self):
+        return pd.DataFrame(self.roll_in_and_out_samples(), columns=['in-sample', 'out-sample'])
