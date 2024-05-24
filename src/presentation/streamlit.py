@@ -58,10 +58,10 @@ def plot_indicator(indicator, entries, exits):
 def run_strategies(select_simulation_type, init_cash, select_asset, select_asset_base, input_number_of_days, container, select_indicator, list_args):
     ticker = f"{select_asset}-{select_asset_base}"
     if(select_simulation_type == "Run Strategy"):
-        strategy_simulator = StrategySimService(input_number_of_days)
         asset_data = fetch_asset_data_for_ticker(ticker)
+        strategy_simulator = StrategySimService(asset_data, input_number_of_days)
         strategies_outcome = strategy_simulator.run_strategies(
-            asset_data, init_cash, select_indicator, list_args
+            init_cash, select_indicator, list_args
         )
         if not strategies_outcome["entries"].empty:
             container.text(strategies_outcome["portfolio"].stats(silence_warnings=True))
