@@ -1,4 +1,6 @@
 /results
+.code-workspace
+*.code-workspace
 
 # Angular
 */node_modules/
@@ -19,7 +21,6 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
 develop-eggs/
 dist/
 downloads/
@@ -208,7 +209,6 @@ __pycache__
 
 # Distribution / packaging
 .Python
-build/
 dist/
 downloads/
 lib/
@@ -271,7 +271,6 @@ jspm_packages/
 # Distribution / packaging
 .Python
 env/
-build/
 develop-eggs/
 dist/
 downloads/
@@ -440,7 +439,6 @@ __pycache__
 
 # Distribution / packaging
 .Python
-build/
 dist/
 downloads/
 lib/

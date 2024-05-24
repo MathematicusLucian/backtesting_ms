@@ -1,5 +1,40 @@
 # backtesting-ms
 
+fetches asset data - pandas
+
+calculate indicators
+
+    TA = vbt.IndicatorFactory.from_pandas_ta(indicator)  
+    TA.run(**dict_indicators)
+
+loop over strategies
+
+    run stategy
+
+    vbt.Portfolio.from_signals(
+        asset data close, 
+        asset data entries, 
+        asset data exit, 
+        cash)
+--------
+fetches asset data
+
+in/out samples (rolling)
+
+simulate holding -> sharpe ratio
+
+in-sharpe (simulate all params)
+    best_index (in-sharpe)
+        performance[performance.groupby('split_idx').idxmax()].index
+    best_params -> fast, and slow: vbt.MA.run
+        entries = fast_ma.ma_above(slow_ma) #, crossover=True)
+        exits = fast_ma.ma_below(slow_ma) #, crossover=True)
+        pf = vbt.Portfolio.from_signals
+        sharpe_ratio
+
+out-sharpe (simulate all params)
+    best_index (out-sharpe)
+
 ## DynamicBT: A wrapper for Backtesting.py
 
 This wrapper is an enhancement of the Python library ``backtesting.py``, which is very popular for backtesting of trading strategies.

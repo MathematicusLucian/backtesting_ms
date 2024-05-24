@@ -6,3 +6,9 @@ def fetch_asset_data(ticker):
 
 def fetch_asset_data__close(ticker):
     return read_asset_data(ticker).get('Close') 
+
+def crypto_currencies():
+    return ["BTC", "ETH", "SOL", "PEPE", "BONK"]
+
+def trad_currencies():
+    return ["GBP", "USD"]
